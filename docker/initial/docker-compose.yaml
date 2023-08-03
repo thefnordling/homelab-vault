@@ -1,0 +1,17 @@
+version: '3.9'
+
+networks:
+  vault_net:
+
+services:
+  vault:
+    image: hashicorp/vault:1.14
+    cap_add:
+      - IPC_LOCK
+    networks:
+      vault_net:
+        aliases:
+          - vault.home.arpa
+    environment:
+      - VAULT_ADDR=http://vault.home.arpa:8200
+    
