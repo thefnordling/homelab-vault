@@ -4,6 +4,9 @@ networks:
   vault_net:
 
 configs:
+  #the vault-config configuration should be created before this stack
+  #is deployed.  you can run `docker config create vault-config config.hcl`
+  #from this directory to create the config with the proper value
   vault-config:
     external: true
 
