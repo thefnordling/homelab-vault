@@ -14,4 +14,9 @@ services:
           - vault.home.arpa
     environment:
       - VAULT_ADDR=http://vault.home.arpa:8200
+      - VAULT_DISABLE_MLOCK=true
+      - VAULT_UI=true
+    volumes:
+      - /mnt/vault:/vault/data
+      - ./config.hcl:/vault/config/config.hcl
     

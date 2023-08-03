@@ -7,9 +7,11 @@ I use the approle plugin to limit access to PKI and KV secrets via policy based 
 
 Unlock-Keys, root tokens and other such secrets will be saved outside of vault in a password manager.
 
+For now i am running this in docker swarm, but will be setting up a k8s-vault in the near future.
+
 Persistent Storage:
 
-I will be running Vault as a stateless docker service.  We will be storing all vault data on an NFS share so all of our approles, secrets and PKI data will be not be lost after a restart or host crashing.  All of our docker hosts will have the same NFS volume mounted at the same location (via /etc/fstab on host) to store the encrypted Vault Data.
+I will be running Vault as a stateless docker service.  We will be storing all vault data on an NFS share so all of our approles, secrets and PKI data will be not be lost after a servuce restart or if a host crashes or has maintenance.  All of our docker hosts will have the same NFS volume mounted at the same location (via /etc/fstab on host) to store the encrypted Vault Data.
 
 We will be taking a daily backup of vault, and retaining that backup for 30 days.  Backups will be stored on a separate NFS share, which is set up similarly on each host.  At some point in the near future will be switching to S3 (minio or aws) to store the backups (so if my nas dies i can recover from a separate store).  I will likely write a simple [C# Consoel App](https://github.com/thefnordling/dotnet-s3-example) for that when i have some time.
 
