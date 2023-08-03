@@ -9,7 +9,6 @@ listener "tcp" {
 }
 
 telemetry {
-  statsite_address = "0.0.00:8125"
   disable_hostname = true
   prometheus_retention_time = "12h"  
 }

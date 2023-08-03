@@ -3,9 +3,15 @@ version: '3.9'
 networks:
   vault_net:
 
+configs:
+  vault-config:
+    external: true
+
 services:
   vault:
     image: hashicorp/vault:1.14
+    command:
+      - "server"    
     cap_add:
       - IPC_LOCK
     networks:
@@ -14,9 +20,12 @@ services:
           - vault.home.arpa
     environment:
       - VAULT_ADDR=http://vault.home.arpa:8200
+      - VAULT_API_ADDR=http://vault.home.arpa:8200
+      - VAULT_CLUSTER_ADDR=http://vault.home.arpa:8201
       - VAULT_DISABLE_MLOCK=true
       - VAULT_UI=true
     volumes:
       - /mnt/vault:/vault/data
-      - ./config.hcl:/vault/config/config.hcl
-    
+    configs:
+      - source: vault-config
+        target: /vault/config/config.hcl
