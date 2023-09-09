@@ -1,0 +1,39 @@
+version: '3.9'
+
+networks:
+  vault_net:
+
+configs:
+  #vault expects a configuration file to be located at /vault/config/config.hcl
+  #we have created a docker configuration with the contents of the config.hcl we 
+  #want our vault instance to use, and are using the docker compose source/target
+  #settings of the config to put this configuration in that location
+  #the config.hcl file (alongside this compose file in this git repo) is the 
+  #simple/sample configuration we are using
+  vault-config:
+    external: true
+
+services:
+  vault:
+    image: hashicorp/vault:1.14
+    command:
+      - "server"    
+    cap_add:
+      - IPC_LOCK
+    networks:
+      vault_net:
+        aliases:
+          - vault.home.arpa
+    environment:
+      - VAULT_ADDR=http://vault.home.arpa:8200
+      - VAULT_API_ADDR=http://vault.home.arpa:8200
+      - VAULT_CLUSTER_ADDR=http://vault.home.arpa:8201
+      - VAULT_DISABLE_MLOCK=true
+      - VAULT_UI=true
+    ports:
+      - 8200:8200
+    volumes:
+      - /mnt/vault:/vault/data
+    configs:
+      - source: vault-config
+        target: /vault/config/config.hcl
