@@ -4,13 +4,34 @@ networks:
   vault_net:
 
 configs:
-  #the vault-config configuration should be created before this stack
-  #is deployed.  you can run `docker config create vault-config config.hcl`
-  #from this directory to create the config with the proper value
+  #vault expects a configuration file to be located at /vault/config/config.hcl
+  #we have created a docker configuration with the contents of the config.hcl we 
+  #want our vault instance to use, and are using the docker compose source/target
+  #settings of the config to put this configuration in that location
+  #the config.hcl file (alongside this compose file in this git repo) is the 
+  #simple/sample configuration we are using
   vault-config:
     external: true
 
+secrets:
+  #the unseal key is displayed on the console when vault first starts up
+  #along with the root token.  i have grabbted that value 
+  #and put it into the vault-unseal-key docker secret
+  vault-unseal-key:
+    external: true
+
 services:
+  unseal:
+    image: thefnordling/homelab-vault-unseal:1.0.0
+    environment:
+      - VAULT_ADDR=http://vault.home.arpa:8200
+      - UNSEAL_KEY_FILE=/run/secrets/unseal-key
+    secrets:
+      - source: vault-unseal-key
+        target: /run/secrets/unseal-key
+    networks:
+      vault_net:        
+
   vault:
     image: hashicorp/vault:1.14
     command:
@@ -27,6 +48,8 @@ services:
       - VAULT_CLUSTER_ADDR=http://vault.home.arpa:8201
       - VAULT_DISABLE_MLOCK=true
       - VAULT_UI=true
+    ports:
+      - 8200:8200
     volumes:
       - /mnt/vault:/vault/data
     configs:
