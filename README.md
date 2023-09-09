@@ -19,7 +19,7 @@ We will be taking a daily backup of vault, and configuring a retention period fo
 
 Setup:
 
-After provisioning storage, setting up NFS mounts and installing docker, I add a new docker config with the value of the contents of the [initial config](./docker/initial/config.hcl).
+After provisioning storage, setting up NFS mounts and installing docker, I add a new docker config with the value of the contents of the [initial config](./docker/initialize-vault-only/config.hcl).
 
  I [initialize the stack](./docker/initialize-vault-only/docker-compose.yml).  Once the vault service starts up - i attach to the container and initialize the vault by running the command `vault operator init -key-shares=1 -key-threshold=1`.  If you have more time and enjoy a more complex/secure setup - you should generate more keys and have a higher number of keys required to unseal (but for a home lab POC this was fine for me).  This command will produce the unseal keys as well as a root token - save those someplace safe and secure you will need them for future maintenance, and add the vault unseal key as a docker secret.  We will need this for the next step.
 
