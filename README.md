@@ -95,3 +95,10 @@ vault write pki_int/roles/home-dot-arpa \
     allow_wildcard_certificates=true \
     max_ttl="43800h"
 ```
+
+# making it work on windows #
+
+copy the root CA from vault to a file, then run powershell as an admin to import it:
+```
+.\certutil.exe -addstore -f "Root" 'C:\certs\home-arpa-root.pem'
+```
