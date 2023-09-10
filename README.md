@@ -94,6 +94,13 @@ vault write pki_int/roles/home-dot-arpa \
     allow_subdomains=true \
     allow_wildcard_certificates=true \
     max_ttl="43800h"
+
+#i haven't tested revoking or generating certs yet
+#may need to adjust this in the future
+vault write pki_int/config/urls \
+    issuing_certificates="https://vault.home.arpa/v1/pki_int/ca" \
+    crl_distribution_points="https://vault.home.arpa/v1/pki_int/crl" 
+
 ```
 
 # making it work on windows #
