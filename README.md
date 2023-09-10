@@ -98,7 +98,8 @@ vault write pki_int/roles/home-dot-arpa \
 
 # making it work on windows #
 
-copy the root CA from vault to a file, then run powershell as an admin to import it:
+copy the root CA from vault to a file, and the intermediate CA from vault to another file - then run powershell as an admin to import it:
 ```
 .\certutil.exe -addstore -f "Root" 'C:\certs\home-arpa-root.pem'
+.\certutil.exe -addstore -f "Root" 'C:\certs\home-arpa-intermediate.pem'
 ```
