@@ -3,7 +3,7 @@ version: '3.9'
 networks:
   vault-net:
     external: true
-    
+
 configs:
   #vault expects a configuration file to be located at /vault/config/config.hcl
   #we have created a docker configuration with the contents of the config.hcl we 
@@ -32,7 +32,10 @@ services:
         target: /run/secrets/unseal-key
     networks:
       vault-net:        
-
+    deploy:
+      placement:
+        constraints: [node.labels.core == true]      
+        
   vault:
     image: hashicorp/vault:1.14
     command:
@@ -56,3 +59,6 @@ services:
     configs:
       - source: vault-config
         target: /vault/config/config.hcl
+    deploy:
+      placement:
+        constraints: [node.labels.core == true]              
