@@ -101,6 +101,24 @@ vault write pki_int/config/urls \
     issuing_certificates="https://vault.home.arpa/v1/pki_int/ca" \
     crl_distribution_points="https://vault.home.arpa/v1/pki_int/crl" 
 
+
+#i want to have a separate intermediate certificate for vmware 
+#enable bash and ssh via vcs
+#ssh into vcs and run /usr/lib/vmware-vmca/bin/certificate-manager
+#select option 2
+#when going through the prompt be sure to specify the hostname at the vcsa name prompt
+#copy the csr over to the vault, and sign it
+
+#sign and generate a cert for the intermediate from the root
+vault write -format=json pki/root/sign-intermediate \
+    issuer_ref="root-2023" \
+    csr=@vmca_issued_csr.csr \
+    not_before_duration="48h" \
+    format=pem_bundle ttl="43800h" \
+    | jq -r '.data.certificate' > vmca_bundle.pem
+
+afterwards, copy the vmca_bundle.pem back to the vcsa host and import it (along w/ prior generated privarte key) 
+
 ```
 
 # making it work on windows #
@@ -109,4 +127,21 @@ copy the root CA from vault to a file, and the intermediate CA from vault to ano
 ```
 .\certutil.exe -addstore -f "Root" 'C:\certs\home-arpa-root.pem'
 .\certutil.exe -addstore -f "Root" 'C:\certs\home-arpa-intermediate.pem'
+```
+
+# accessing via approle #
+
+create a policy w/ access to the paths you need - call it `another-role-policy` or something that makes sense for your use case.
+
+create the role called `another-role`
+```
+write auth/approle/role/another-role token_num_uses=1 token_ttl=20m policies="default, another-role-policy"
+```
+retrieve the role id (not a secret)
+```
+read auth/approle/role/another-role/role-id
+```
+generate the secret id (this is a secret)
+```
+write -f auth/approle/role/another-role/secret-id
 ```

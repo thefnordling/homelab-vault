@@ -1,7 +1,8 @@
 version: '3.9'
 
 networks:
-  vault_net:
+  vault-net:
+    external: true
 
 configs:
   #vault expects a configuration file to be located at /vault/config/config.hcl
@@ -13,25 +14,7 @@ configs:
   vault-config:
     external: true
 
-secrets:
-  #the unseal key is displayed on the console when vault first starts up
-  #along with the root token.  i have grabbted that value 
-  #and put it into the vault-unseal-key docker secret
-  vault-unseal-key:
-    external: true
-
 services:
-  unseal:
-    image: thefnordling/homelab-vault-unseal:1.0.0
-    environment:
-      - VAULT_ADDR=http://vault.home.arpa:8200
-      - UNSEAL_KEY_FILE=/run/secrets/unseal-key
-    secrets:
-      - source: vault-unseal-key
-        target: /run/secrets/unseal-key
-    networks:
-      vault_net:        
-
   vault:
     image: hashicorp/vault:1.14
     command:
@@ -39,7 +22,7 @@ services:
     cap_add:
       - IPC_LOCK
     networks:
-      vault_net:
+      vault-net:
         aliases:
           - vault.home.arpa
     environment:
